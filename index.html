@@ -1,583 +1,1390 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>LP Content Lab — Sistemas de Contenido & Orquestación Multi-Agente</title>
-<meta name="description" content="LP Content Lab — Laboratorio de repurposing de contenido B2B y orquestación multi-agente de IA para directivos y firmas inmobiliarias. Una vertical oficial de LP & Co. Diego Lecourtois Palencia, fundador.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<style>
-:root{
-  color-scheme:dark;
-  --bg:#060606;
-  --fg:#ededeb;
-  --walnut:#241a15;
-  --walnut-border:#3d2a21;
-  --crimson:#781218;
-  --crimson-glow:rgba(120,18,24,0.3);
-  --gold:#c99a45;
-  --gold-dim:rgba(201,154,69,0.35);
-  --f80:rgba(237,237,235,.85);
-  --f60:rgba(237,237,235,.6);
-  --f40:rgba(237,237,235,.4);
-  --f20:rgba(237,237,235,.2);
-  --f10:rgba(237,237,235,.1);
-  --f05:rgba(237,237,235,.05);
-  --display:'Michroma','Eurostile','Arial Black',sans-serif;
-  --body:'Instrument Sans','Helvetica Neue',Arial,sans-serif;
-  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
-  --ease:cubic-bezier(.2,.7,.1,1);
-}
-html,body{height:100%;background:var(--bg);color:var(--fg);overflow:hidden}
-body{font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-button,a{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-decoration:none}
-:focus-visible{outline:1px solid var(--gold);outline-offset:3px}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>LP Content Lab · Sistemas de Contenido & Repurposing B2B</title>
+  <meta name="description" content="Laboratorio de ingeniería de contenidos y orquestación multi-agente en la Riviera Maya. Convertimos grabaciones brutas en activos patrimoniales de LinkedIn y video vertical para directivos e inversionistas.">
+  <link rel="canonical" href="https://lp-content-lab.vercel.app/">
+  <meta property="og:title" content="LP Content Lab · Sistemas de Contenido & Repurposing B2B">
+  <meta property="og:description" content="Transformamos tus grabaciones en una infraestructura de autoridad digital. Cero clichés de IA, entrega en 48 horas.">
+  <meta property="og:type" content="website">
 
-#stage{position:fixed;inset:0;overflow:hidden;touch-action:pan-y}
-#world{position:absolute;left:0;top:0;transform-origin:0 0}
-#world.moving{will-change:transform}
-#map{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible}
-#map *{vector-effect:non-scaling-stroke}
-.orb{fill:none;stroke:var(--fg);stroke-opacity:.06}
-.spoke{stroke:var(--fg);stroke-opacity:.08}
-.seq{fill:none;stroke:var(--gold);stroke-opacity:.35;stroke-dasharray:2 10}
-.ring{stroke:var(--fg);stroke-opacity:.4;transition:stroke-opacity .6s}
-.ring2{fill:none;stroke:var(--gold);stroke-opacity:.18;stroke-dasharray:3 12}
-.tick{stroke:var(--gold);stroke-opacity:.6}
-.num{font-family:var(--display);font-size:240px;fill:var(--fg);fill-opacity:.04;transition:fill-opacity .6s}
-.tag,.coord{font-family:var(--mono);font-size:22px;letter-spacing:.16em;fill:var(--fg);fill-opacity:.5}
-.hubtxt{font-family:var(--display);font-size:72px;fill:var(--fg);opacity:0;transition:opacity .6s;letter-spacing:.06em}
-.node.cur .ring,.hub.cur .ring{stroke-opacity:1;stroke:var(--gold)}
-body.ov .num{fill-opacity:.14}
-body.ov .hubtxt{opacity:1}
+  <!-- Google Fonts: Castoro Titling (Serif Editorial de Kenny Samanta) + Instrument Sans + IBM Plex Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Castoro+Titling&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-/* Labels */
-#labels{position:absolute;inset:0;pointer-events:none}
-.lbl{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:2px;
-  padding:6px 12px;background:rgba(6,6,6,.92);border:1px solid var(--f20);
-  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;
-  opacity:0;pointer-events:none;transition:opacity .4s,background .2s,color .2s,border-color .2s}
-.lbl small{font-size:9px;color:var(--gold)}
-body.ov .lbl{opacity:1;pointer-events:auto}
-.lbl:hover,.lbl:focus-visible{background:var(--fg);color:var(--bg);border-color:var(--gold)}
-.lbl:hover small,.lbl:focus-visible small{color:var(--crimson)}
-.lbl.hubl{display:none}
+  <style>
+    :root {
+      --bg: #0d0c0b;
+      --bg-card: #151312;
+      --bg-surface: #1c1917;
+      --border: rgba(220, 216, 208, 0.12);
+      --border-accent: rgba(120, 40, 42, 0.4);
+      --text: #ede8df;
+      --text-muted: #9e978e;
+      --accent: #8b2b2e;
+      --accent-hover: #a63438;
+      --walnut: #2a1e17;
+      --gold: #c99a45;
+      --gold-dim: rgba(201, 154, 69, 0.2);
+      --font-serif: "Castoro Titling", Georgia, serif;
+      --font-sans: "Instrument Sans", -apple-system, sans-serif;
+      --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-/* Top & Bottom Bars */
-.bar-top,.bar-bot{position:fixed;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding-inline:max(16px,env(safe-area-inset-left,0px));font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
-.bar-top{top:0;padding-top:calc(14px + env(safe-area-inset-top,0px));padding-bottom:14px;color:var(--f60);pointer-events:none}
-.bar-top b{color:var(--fg);font-weight:600}
-.brand-badge{display:inline-flex;align-items:center;gap:8px}
-.brand-badge .dot{width:6px;height:6px;background:var(--crimson);border-radius:50%;box-shadow:0 0 8px var(--crimson)}
-.switcher{display:flex;gap:4px;pointer-events:auto}
-.sw-btn{border:1px solid var(--f40);padding:5px 10px;background:var(--bg);color:var(--fg);transition:background .2s,color .2s;font-size:10px}
-.sw-btn:hover{background:var(--fg);color:var(--bg)}
-.sw-btn.active{background:var(--crimson);color:#fff;border-color:var(--crimson);font-weight:600}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.bar-bot{bottom:0;flex-direction:column;align-items:stretch;gap:10px;padding-top:10px;
-  padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));
-  background:linear-gradient(to top,var(--bg) 60%,rgba(6,6,6,0))}
-.prog{display:flex;gap:4px}
-.prog button{flex:1;height:14px;display:flex;align-items:center}
-.prog button::after{content:"";display:block;width:100%;height:2px;background:var(--f20);transition:background .3s}
-.prog button[aria-current="step"]::after,.prog button.done::after{background:var(--gold)}
-.ctl{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.ctl .now{color:var(--f60);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.ctl .now b{color:var(--fg);font-weight:500}
-.ctl .btns{display:flex;gap:6px;flex:none}
-.btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  border:1px solid var(--f40);background:var(--bg);color:var(--fg);padding:10px 14px;display:inline-flex;align-items:center;justify-content:center;transition:background .2s,color .2s,border-color .2s}
-.btn:hover{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.btn.solid{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.btn.solid:hover{background:var(--bg);color:var(--fg)}
-.btn.crimson{background:var(--crimson);color:#fff;border-color:var(--crimson)}
-.btn.crimson:hover{background:#9e171f;border-color:#9e171f}
-.btn.gold{background:var(--gold);color:var(--bg);border-color:var(--gold);font-weight:600}
-.btn.gold:hover{background:#dfae53}
-.btn[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
-.btn:disabled{opacity:.3;pointer-events:none}
+    html {
+      scroll-behavior: smooth;
+      background-color: var(--bg);
+      color: var(--text);
+    }
 
-#hint{position:fixed;left:0;right:0;top:calc(54px + env(safe-area-inset-top,0px));text-align:center;z-index:4;
-  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
-  opacity:0;transition:opacity .4s;pointer-events:none;padding-inline:16px}
-body.ov #hint{opacity:1}
+    body {
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      background-color: var(--bg);
+    }
 
-/* Content Panel */
-#panel{position:fixed;inset:0;z-index:3;display:grid;place-items:center;pointer-events:none;
-  padding:calc(56px + env(safe-area-inset-top,0px)) 16px calc(112px + env(safe-area-inset-bottom,0px))}
-#card{pointer-events:auto;position:relative;width:100%;max-width:720px;max-height:100%;overflow:auto;overscroll-behavior:contain;
-  padding:clamp(24px,4.5vw,44px);background:rgba(8,7,7,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border:1px solid var(--walnut-border);box-shadow:0 24px 60px rgba(0,0,0,.8);
-  opacity:0;transform:scale(.97);transition:opacity .35s,transform .5s var(--ease);visibility:hidden}
-#panel.on #card{opacity:1;transform:none;visibility:visible}
-#card::before,#card::after{content:"";position:absolute;width:16px;height:16px;border:1px solid var(--gold);pointer-events:none}
-#card::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
-#card::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
-#card>*+*{margin-top:20px}
-.rv{opacity:0;transform:translateY(10px);transition:opacity .5s var(--ease),transform .6s var(--ease);transition-delay:calc(var(--i,0) * 70ms + 120ms)}
-#panel.on .rv{opacity:1;transform:none}
+    /* Container */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-/* Typography */
-.eye{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
-h1.hero{font-family:var(--display);font-weight:400;font-size:clamp(28px,7vw,58px);line-height:1.08;letter-spacing:.02em;margin:0}
-h2{font-family:var(--display);font-weight:400;font-size:clamp(20px,3.2vw,30px);line-height:1.24;letter-spacing:.01em;margin:0;text-wrap:balance}
-.lead{font-size:16px;color:var(--f80);max-width:60ch;margin:0}
-.lead.sm{font-size:14px;color:var(--f60)}
-.byline{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
-.byline span+span{color:var(--f60)}
-.row{display:flex;flex-wrap:wrap;gap:8px}
-.hint{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--f40)}
-.mod{border:1px solid var(--walnut-border);background:rgba(20,15,12,.4);padding:20px;display:flex;flex-direction:column;gap:14px}
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
 
-/* Interactive Components */
-.seg{display:flex;border:1px solid var(--f40)}
-.seg button{flex:1;padding:10px 8px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;transition:background .2s,color .2s}
-.seg button+button{border-left:1px solid var(--f40)}
-.seg button:hover{background:var(--f10)}
-.seg button[aria-pressed="true"]{background:var(--crimson);color:#fff;font-weight:600}
-.out{margin:0;min-height:3.5em;color:var(--f80);font-size:14px;line-height:1.55}
-.out q{font-family:var(--display);font-size:14px;letter-spacing:.02em;display:block;margin-bottom:6px;color:var(--gold);font-style:normal}
+    p {
+      color: var(--text-muted);
+    }
 
-/* Swarm Terminal / Chat */
-.swarm-box{display:flex;flex-direction:column;gap:10px;font-family:var(--mono);font-size:12px;background:#050505;border:1px solid var(--walnut-border);padding:14px}
-.swarm-msg{display:grid;grid-template-columns:110px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--f05)}
-.swarm-msg:last-child{border-bottom:0}
-.swarm-agent{color:var(--gold);font-weight:600}
-.swarm-text{color:var(--f80)}
-.swarm-badge{display:inline-block;padding:2px 6px;background:var(--crimson);color:#fff;font-size:9px;border-radius:2px;margin-left:6px}
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
 
-/* Grid & Stats */
-.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:10px}
-.stat-box{border:1px solid var(--walnut-border);background:rgba(36,26,21,.3);padding:16px;display:flex;flex-direction:column;gap:4px}
-.stat-box b{font-family:var(--display);font-size:clamp(22px,4vw,34px);font-weight:400}
-.stat-box span{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--f60)}
-.stat-box.solid{background:var(--crimson);color:#fff;border-color:var(--crimson)}
-.stat-box.solid span{color:rgba(255,255,255,.8)}
+    /* Eyebrow & Badges */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
 
-.facts{margin:0;display:grid;border-top:1px solid var(--walnut-border)}
-.facts>div{display:grid;grid-template-columns:140px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--walnut-border)}
-.facts dt{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);padding-top:2px}
-.facts dd{margin:0;font-size:14px;color:var(--f80)}
+    .eyebrow::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent);
+    }
 
-/* Pricing / Calculator */
-.calc label{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:var(--f80);font-family:var(--mono)}
-.calc output{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--gold);font-weight:600}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:24px;background:transparent;margin:-4px 0 0}
-input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--f40)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-7.5px;background:var(--gold);border:0;border-radius:0}
-input[type=range]::-moz-range-track{height:1px;background:var(--f40)}
-input[type=range]::-moz-range-thumb{width:16px;height:16px;background:var(--gold);border:0;border-radius:0}
-.res{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--gold)}
-.res>div{padding:14px;display:flex;flex-direction:column;gap:4px;background:#050505}
-.res>div+div{border-left:1px solid var(--gold);background:var(--gold);color:var(--bg)}
-.res small{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
-.res b{font-family:var(--display);font-weight:400;font-size:clamp(16px,3.4vw,24px);font-variant-numeric:tabular-nums}
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 26px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.25s var(--ease);
+    }
 
-/* Input Fields */
-.fld{display:flex;flex-direction:column;gap:6px}
-.fld label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
-.fld input,.fld textarea{background:#000;border:1px solid var(--f40);color:var(--fg);padding:10px 12px;font-family:var(--mono);font-size:13px;outline:none}
-.fld input:focus,.fld textarea:focus{border-color:var(--gold)}
+    .btn-primary {
+      background-color: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
 
-@media (max-width:560px){
-  .bar-top .pres{display:none}
-  .stat-grid{grid-template-columns:1fr}
-  .facts>div{grid-template-columns:1fr;gap:2px}
-  .swarm-msg{grid-template-columns:1fr;gap:2px}
-  .ctl .now span{display:none}
-  .btn{padding:10px 11px}
-}
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{transition-duration:0s!important;transition-delay:0s!important;animation:none!important}
-}
-</style>
+    .btn-primary:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(139, 43, 46, 0.35);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    .btn-gold {
+      background-color: var(--gold);
+      color: #0d0c0b;
+      font-weight: 700;
+      border-color: var(--gold);
+    }
+
+    .btn-gold:hover {
+      background-color: #dfae53;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(201, 154, 69, 0.3);
+    }
+
+    /* Header Nav */
+    header.site-header {
+      position: sticky;
+      top: 0;
+      background-color: rgba(13, 12, 11, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 16px 0;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--font-serif);
+      font-size: 1.15rem;
+      letter-spacing: 0.04em;
+      color: var(--text);
+    }
+
+    .brand span.tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      color: var(--gold);
+      letter-spacing: 0.1em;
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+      align-items: center;
+    }
+
+    .nav-menu a {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .nav-menu a:hover {
+      color: var(--gold);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 110px 0 80px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(circle at 50% 10%, rgba(139, 43, 46, 0.12) 0%, transparent 60%);
+    }
+
+    .hero-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.3rem, 6vw, 4.4rem);
+      line-height: 1.1;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      letter-spacing: -0.01em;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold);
+      font-family: var(--font-serif);
+    }
+
+    .hero p.lead {
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+      color: var(--text-muted);
+      max-width: 760px;
+      margin: 0 auto 36px;
+      font-weight: 400;
+      line-height: 1.6;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 50px;
+    }
+
+    /* Proof metrics bar */
+    .proof-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 28px 0 0;
+      border-top: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .proof-item b {
+      display: block;
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .proof-item span {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    /* Ticker Band (Hypha Style) */
+    .ticker-band {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      animation: ticker 32s linear infinite;
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-muted);
+      padding-right: 28px;
+    }
+
+    .ticker-item svg {
+      width: 14px;
+      height: 14px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Section Styles */
+    section {
+      padding: 90px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header {
+      max-width: 720px;
+      margin-bottom: 50px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .section-header p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    /* Comparison / Manifesto */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .comp-card {
+      padding: 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      position: relative;
+    }
+
+    .comp-card.highlight {
+      border-color: var(--border-accent);
+      background: linear-gradient(180deg, rgba(139, 43, 46, 0.08) 0%, var(--bg-card) 100%);
+    }
+
+    .comp-card .tag-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .comp-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+    }
+
+    .comp-list {
+      list-style: none;
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .comp-list li {
+      display: flex;
+      gap: 12px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .comp-list li span.mark {
+      font-family: var(--font-mono);
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    /* Swarm Multi-Agent Interactive Terminal (Ramon Riva Insp.) */
+    .terminal-container {
+      background: #080707;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+    }
+
+    .terminal-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dots i {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      background: var(--border);
+    }
+
+    .terminal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+    }
+
+    .agent-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(220, 216, 208, 0.05);
+    }
+
+    .agent-name {
+      color: var(--gold);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .agent-badge {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .agent-output {
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* Case Studies Grid */
+    .case-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+
+    .case-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .case-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--gold);
+    }
+
+    .case-meta {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      margin-bottom: 12px;
+    }
+
+    .case-card h3 {
+      font-size: 1.6rem;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .case-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 16px;
+      margin: 18px 0;
+      font-size: 0.88rem;
+    }
+
+    .case-box code {
+      display: block;
+      font-family: var(--font-mono);
+      color: var(--text);
+      margin-top: 6px;
+    }
+
+    /* Pricing Tiers (Kenny Samanta & Hypha Style) */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 44px 36px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .pricing-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, rgba(139, 43, 46, 0.12) 0%, var(--bg-card) 100%);
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      padding: 4px 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .price-amount {
+      font-family: var(--font-serif);
+      font-size: 2.8rem;
+      color: var(--text);
+      line-height: 1;
+      margin: 16px 0 6px;
+    }
+
+    .price-amount small {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .pricing-features {
+      list-style: none;
+      display: grid;
+      gap: 14px;
+      margin: 28px 0 36px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    .pricing-features li {
+      display: flex;
+      gap: 12px;
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .pricing-features li span.check {
+      color: var(--gold);
+      font-family: var(--font-mono);
+    }
+
+    /* Founder Bio Section */
+    .founder-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 50px;
+      align-items: center;
+    }
+
+    .founder-photo-box {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      padding: 16px;
+      position: relative;
+    }
+
+    .founder-avatar-placeholder {
+      aspect-ratio: 4/5;
+      background: linear-gradient(145deg, #1f1a17, #0e0d0c);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .founder-avatar-placeholder h4 {
+      font-size: 1.3rem;
+      margin-bottom: 4px;
+    }
+
+    .founder-avatar-placeholder span {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .founder-content h3 {
+      font-size: 2.2rem;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+    }
+
+    .founder-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 30px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .fstat b {
+      display: block;
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      color: var(--text);
+    }
+
+    .fstat span {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Free Sample Trojan Horse Form Section */
+    .sample-section {
+      background: radial-gradient(circle at 50% 100%, rgba(139, 43, 46, 0.15) 0%, var(--bg) 60%);
+      padding: 100px 0;
+    }
+
+    .sample-box {
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 48px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gold);
+    }
+
+    .form-group input {
+      background: #090808;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group input:focus {
+      border-color: var(--gold);
+    }
+
+    /* Floating WhatsApp Card (Hypha Style) */
+    .floating-chat {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 330px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+      padding: 18px;
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.3s var(--ease), opacity 0.3s ease;
+    }
+
+    .floating-chat.hidden {
+      transform: translateY(120%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chat-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chat-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-avatar {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #fff;
+    }
+
+    .chat-user-info p {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .chat-user-info span {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: #22c55e;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chat-user-info span::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      background: #22c55e;
+      border-radius: 50%;
+    }
+
+    .chat-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .chat-bubble {
+      background: var(--bg-surface);
+      padding: 12px 14px;
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.45;
+      border-left: 2px solid var(--accent);
+    }
+
+    .chat-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #25d366;
+      color: #0d0c0b;
+      font-family: var(--font-mono);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 10px;
+      border-radius: 2px;
+      transition: background-color 0.2s ease;
+    }
+
+    .chat-action:hover {
+      background: #20b857;
+    }
+
+    /* Footer */
+    footer.site-footer {
+      padding: 60px 0 40px;
+      background: #080706;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .footer-left p {
+      color: var(--text-muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+    }
+
+    .footer-links a:hover {
+      color: var(--gold);
+    }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .proof-bar {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .comparison-grid,
+      .case-grid,
+      .pricing-grid,
+      .founder-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-menu {
+        display: none;
+      }
+      .sample-box {
+        padding: 30px 20px;
+      }
+      .floating-chat {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        bottom: 16px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div id="stage">
-  <div id="world"><svg id="map" aria-hidden="true"></svg></div>
-  <div id="labels"></div>
-</div>
+  <!-- ================================================= HEADER -->
+  <header class="site-header">
+    <div class="container nav-inner">
+      <a href="/" class="brand">
+        LP✦ <span class="tag">CONTENT LAB</span>
+      </a>
 
-<header class="bar-top">
-  <span class="brand-badge"><span class="dot"></span><b>LP Content Lab</b><span class="pres"> &nbsp;/&nbsp; Repurposing B2B</span></span>
-  <nav class="switcher">
-    <a href="https://lp-and-co.vercel.app/" target="_blank" class="sw-btn">LP &amp; Co.</a>
-    <a href="/" class="sw-btn active">Content Lab</a>
-    <a href="https://lp-and-co.vercel.app/diego" target="_blank" class="sw-btn">Diego</a>
-  </nav>
-</header>
-<p id="hint">Mapa del Sistema · Elige un nodo para navegar</p>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="#manifiesto">Manifiesto</a></li>
+          <li><a href="#enjambre">El Enjambre</a></li>
+          <li><a href="#casos">Casos</a></li>
+          <li><a href="#precios">Precios</a></li>
+          <li><a href="#fundador">Fundador</a></li>
+        </ul>
+      </nav>
 
-<div id="panel" aria-live="polite"><article id="card"></article></div>
+      <div class="nav-actions">
+        <a href="https://wa.me/5219984955745?text=Hola%20Diego,%20quiero%20conocer%20LP%20Content%20Lab" target="_blank" rel="noopener" class="btn btn-secondary">
+          WhatsApp
+        </a>
+        <a href="#muestra" class="btn btn-primary">
+          Muestra Gratis
+        </a>
+      </div>
+    </div>
+  </header>
 
-<nav class="bar-bot" aria-label="Navegación del sistema">
-  <div class="prog" id="prog"></div>
-  <div class="ctl">
-    <p class="now" id="now" style="margin:0"></p>
-    <div class="btns">
-      <button class="btn" id="prev" aria-label="Anterior">←</button>
-      <button class="btn" id="map-btn" aria-pressed="false">Mapa</button>
-      <button class="btn solid" id="next" aria-label="Siguiente">→</button>
+  <!-- ================================================= HERO -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <span class="eyebrow">Ingeniería de Contenidos B2B · Riviera Maya</span>
+      <h1>
+        Transformamos tus videos en una <em>infraestructura</em> de autoridad digital.
+      </h1>
+      <p class="lead">
+        Para directivos, desarrolladores inmobiliarios y fundadores que no tienen tiempo de ser influencers. Tú grabas 1 hora al mes; nosotros extraemos 16 activos terminados para LinkedIn y video vertical con un SLA estricto de 48 horas.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#muestra" class="btn btn-primary">
+          Solicitar Muestra de Prueba en 24h &rarr;
+        </a>
+        <a href="#casos" class="btn btn-secondary">
+          Ver Caso HAUS Talks (EP. 21) &darr;
+        </a>
+      </div>
+
+      <div class="proof-bar">
+        <div class="proof-item">
+          <b>+2,500</b>
+          <span>Cerraduras IoT operando (Mr. Lock)</span>
+        </div>
+        <div class="proof-item">
+          <b>48 Hrs</b>
+          <span>SLA garantizado de entrega</span>
+        </div>
+        <div class="proof-item">
+          <b>0% Slop</b>
+          <span>Cero clichés de IA genérica</span>
+        </div>
+        <div class="proof-item">
+          <b>12 a 16</b>
+          <span>Activos al mes por cliente</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= TICKER (Hypha Style) -->
+  <div class="ticker-band" aria-hidden="true">
+    <div class="ticker-track">
+      <div class="ticker-item">
+        <span>Repurposing B2B</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Orquestación Multi-Agente</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Ghostwriting Ejecutivo para LinkedIn</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Real Estate &amp; Hospitalidad de Alto Ticket</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Cero AI Slop</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Video Vertical 9:16 (Reels/TikTok/Shorts)</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Infraestructura Patrimonial</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <!-- Duplicate for infinite marquee -->
+      <div class="ticker-item">
+        <span>Repurposing B2B</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Orquestación Multi-Agente</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Ghostwriting Ejecutivo para LinkedIn</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
+      <div class="ticker-item">
+        <span>Real Estate &amp; Hospitalidad de Alto Ticket</span>
+        <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/></svg>
+      </div>
     </div>
   </div>
-</nav>
 
-<script>
-(function(){
-const $=s=>document.querySelector(s);
-const world=$('#world'), svg=$('#map'), panel=$('#panel'), card=$('#card'), labels=$('#labels');
-const R=420, HUB=560;
-const ROT=[-6,5,-4,8,-5,4];
-const NODES=Array.from({length:6},(_,i)=>{
-  const a=(-90+i*360/6)*Math.PI/180;
-  const d=i%2?1650:1440;
-  return{x:Math.round(Math.cos(a)*d),y:Math.round(Math.sin(a)*d),r:ROT[i]};
-});
-const pad=n=>String(n).padStart(2,'0');
-const usd=v=>'$'+Math.round(v).toLocaleString('en-US')+' USD';
-const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  <!-- ================================================= MANIFIESTO -->
+  <section id="manifiesto">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">La Filosofía</span>
+        <h2>Manifestar no es magia.<br>Es física y sistemas.</h2>
+        <p>
+          Las agencias comunes te venden horas de edición desordenadas y plantillas genéricas en Canva. Nosotros aplicamos la mentalidad de ingeniería: un sistema cerrado que extrae tu criterio y lo multiplica sin drenar tu tiempo.
+        </p>
+      </div>
 
-/* ---------- SLIDES CONTENT ---------- */
-const S=[
-{id:'inicio',label:'Inicio',at:'hub',html:`
-<p class="eye rv" style="--i:0">Vertical Oficial de LP &amp; Co. &middot; Cancún, México</p>
-<h1 class="hero rv" style="--i:1">LP Content<br>Lab</h1>
-<p class="lead rv" style="--i:2">Infraestructura de contenido y orquestación multi-agente para fundadores y firmas que no tienen tiempo de ser influencers.</p>
-<div class="byline rv" style="--i:3">
-  <span>Diego Lecourtois Palencia &middot; Fundador</span>
-  <span>Co-Founder @ Mr. Lock (+2,500 IoT)</span>
-  <span>21.16° N &middot; 86.85° W</span>
-</div>
-<div class="stat-grid rv" style="--i:4">
-  <div class="stat-box solid"><b>12 a 16</b><span>Activos B2B al mes / cliente</span></div>
-  <div class="stat-box"><b>48 Horas</b><span>SLA estricto de entrega</span></div>
-</div>
-<div class="row rv" style="--i:5">
-  <button class="btn crimson" data-go="1">Explorar Sistema &rarr;</button>
-  <button class="btn" data-go="6">Pedir Muestra Gratis</button>
-  <button class="btn" data-ov>Ver Mapa [M]</button>
-</div>
-<p class="hint rv" style="--i:6">Navega con flechas &larr; &rarr; del teclado o pulsa M para ver la órbita completa.</p>`},
+      <div class="comparison-grid">
+        <div class="comp-card">
+          <span class="tag-label" style="color:var(--text-muted)">01 · La Agencia de Redes Tradicional</span>
+          <h3>El Caos Manual</h3>
+          <p>Tratan el contenido como entretenimiento efímero para perseguir likes vacíos en algoritmos volátiles.</p>
+          <ul class="comp-list">
+            <li><span class="mark">&times;</span> El fundador pierde 12 horas a la semana revisando cortes y aprobando copys mediocres.</li>
+            <li><span class="mark">&times;</span> Textos inflados con clichés de IA: <em>"En el dinámico mundo de hoy..."</em>.</li>
+            <li><span class="mark">&times;</span> Subtítulos chillones con emojis infantiles que destruyen la autoridad ejecutiva.</li>
+            <li><span class="mark">&times;</span> Cero retorno medible en ventas o atracción de inversionistas.</li>
+          </ul>
+        </div>
 
-{id:'manifiesto',label:'01 — Manifiesto',at:0,html:`
-<p class="eye rv" style="--i:0">01 &mdash; Filosofía Operativa</p>
-<h2 class="rv" style="--i:1">Manifestar no es magia.<br>Es física y sistemas.</h2>
-<p class="lead rv" style="--i:2">El 99% de las agencias venden volumen vacío y clichés de IA que destruyen la reputación ejecutiva. Nosotros tratamos el contenido como una infraestructura patrimonial.</p>
-<div class="mod rv" style="--i:3">
-  <p class="eye" style="margin:0">Elige la perspectiva:</p>
-  <div class="seg" id="mseg">
-    <button data-v="agencia" aria-pressed="false">Agencia Común</button>
-    <button data-v="lab" aria-pressed="true">LP Content Lab</button>
-  </div>
-  <p class="out" id="mout"></p>
-</div>
-<blockquote class="rv" style="--i:4;margin:0;padding-left:14px;border-left:2px solid var(--crimson);font-size:14px;color:var(--f80)">
-  "Oakley no fue creada para ser moda. El Lab no fue creado para ser una agencia de redes sociales. Es una máquina de ingeniería de reputación."
-</blockquote>`,
-init(){
-  const T={
-    agencia:'<q>La Trampa del Creador Esclavo</q>El directivo pasa 12 horas a la semana peleando con Premiere, Canva y copys genéricos de ChatGPT que suenan a robot. Resultado: fatiga, métricas vanidosas y cero clientes de alto ticket.',
-    lab:'<q>Infraestructura sin Fricción</q>Tú solo grabas tus llamadas, podcasts o recorridos (1 hora por semana). Nuestro enjambre multi-agente extrae tus mejores tesis y te entrega 16 piezas terminadas de video vertical y LinkedIn listas en Drive.'
-  };
-  seg('#mseg',v=>{$('#mout').innerHTML=T[v]});
-}},
+        <div class="comp-card highlight">
+          <span class="tag-label" style="color:var(--gold)">02 · LP Content Lab</span>
+          <h3>Infraestructura de Activos</h3>
+          <p>Tratamos el contenido como una barrera de entrada patrimonial que atrae capital y construye reputación sin fricción.</p>
+          <ul class="comp-list">
+            <li><span class="mark">&check;</span> <strong>1 sola hora de grabación:</strong> Aprovechamos tus podcasts, zooms o recorridos existentes.</li>
+            <li><span class="mark">&check;</span> <strong>Orquestación multi-agente:</strong> Extracción matemática de hooks de alta retención.</li>
+            <li><span class="mark">&check;</span> <strong>Voz ejecutiva pura:</strong> Textos sin adjetivos vacíos, enfocados en números y criterio de negocio.</li>
+            <li><span class="mark">&check;</span> <strong>Entrega semanal en Drive:</strong> Carpetas listas para descargar y publicar sin tocar Premiere.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-{id:'enjambre',label:'02 — El Enjambre',at:1,html:`
-<p class="eye rv" style="--i:0">02 &mdash; Tecnología Propietaria</p>
-<h2 class="rv" style="--i:1">Orquestación Multi-Agente</h2>
-<p class="lead rv" style="--i:2">No somos un freelancer con una pestaña abierta. Operamos un enjambre de subagentes especializados, calibrados con tus directrices de voz y filtrados por supervisión humana.</p>
-<div class="swarm-box rv" style="--i:3">
-  <div class="swarm-msg">
-    <span class="swarm-agent">@Lead_Scout</span>
-    <span class="swarm-text">Video largo descargado (48 min). Transcripción Whisper completada. 3 segmentos de alta tensión detectados en min 04:12, 18:30 y 31:45.</span>
-  </div>
-  <div class="swarm-msg">
-    <span class="swarm-agent">@Creative_Dir</span>
-    <span class="swarm-text">Gancho de 3s aprobado: <strong style="color:#fff">"EL ERROR DE $200K QUE NADIE TE DICE DE TULUM"</strong>. Ratio de retención estimado >85%.</span>
-  </div>
-  <div class="swarm-msg">
-    <span class="swarm-agent">@Ghostwriter</span>
-    <span class="swarm-text">Ensayo de LinkedIn estructurado (180 palabras, viñetas limpias, cero AI slop, cierre de debate patrimonial).</span>
-  </div>
-  <div class="swarm-msg">
-    <span class="swarm-agent">@Diego_Check <span class="swarm-badge">HUMANO</span></span>
-    <span class="swarm-text">Criterio validado. Subtítulos amarillo neón en 9:16 verificados. Exportando a carpeta de Google Drive del cliente.</span>
-  </div>
-</div>
-<p class="hint rv" style="--i:4">Cada agente realiza una sola función técnica con máxima precisión, eliminando el 95% del costo manual.</p>`,
-init(){}},
+  <!-- ================================================= EL ENJAMBRE (MULTI-AGENTE) -->
+  <section id="enjambre" style="background:#090807">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Detrás de la Máquina</span>
+        <h2>El Enjambre Multi-Agente</h2>
+        <p>
+          Inspirado en los flujos de trabajo de operadores avanzados: un grupo coordinado de subagentes autónomos que procesan tu material en paralelo, con un filtro humano indispensable.
+        </p>
+      </div>
 
-{id:'piloto',label:'03 — Caso Piloto',at:2,html:`
-<p class="eye rv" style="--i:0">03 &mdash; Prueba de Concepto en Vivo</p>
-<h2 class="rv" style="--i:1">Caso: HAUS Talks EP. 21</h2>
-<p class="lead rv" style="--i:2">Extraído del podcast de Haus Real Estate: "¿Por qué construir menos en Tulum?". De un video largo de YouTube a una pieza de asalto para inversionistas.</p>
-<div class="seg rv" style="--i:3" id="cseg">
-  <button data-v="hook" aria-pressed="true">01 · Gancho 9:16</button>
-  <button data-v="post" aria-pressed="false">02 · Post LinkedIn</button>
-  <button data-v="troya" aria-pressed="false">03 · Caballo de Troya</button>
-</div>
-<div class="mod rv" style="--i:4">
-  <div id="cout" style="font-size:13.5px;color:var(--f80);line-height:1.55"></div>
-</div>`,
-init(){
-  const T={
-    hook:`<p class="eye" style="color:var(--gold);margin:0 0 6px">HOOK EN PANTALLA (PRIMEROS 3 SEG):</p>
-          <p style="font-family:var(--display);font-size:16px;color:#fff;margin:0 0 10px">"EL ERROR DE $200K QUE NADIE TE DICE DE TULUM 🚨"</p>
-          <p class="eye" style="color:var(--gold);margin:0 0 4px">AUDIO HABLADO:</p>
-          <p style="margin:0 0 10px"><em>"Si compraste un departamento en Tulum esperando 15% de retorno en Airbnb... caíste en la trampa de la densidad."</em></p>
-          <p class="eye" style="color:var(--gold);margin:0 0 4px">EL QUIEBRE CONTRARIAN:</p>
-          <p style="margin:0">Muestra por qué construir menos (80% conservación de selva) permite cobrar tarifas de $800 USD/noche mientras los microestudios se desangran a $45 USD.</p>`,
-    post:`<p class="eye" style="color:var(--gold);margin:0 0 6px">COPY EJECUTIVO B2B (EXTRACTO):</p>
-          <p style="margin:0 0 8px"><em>"Construir más departamentos en Tulum hoy es la forma más rápida de destruir tu ROI.<br><br>
-          El 90% de los inversionistas novatos cayeron en la trampa de la densidad: lotes con 50 micro-estudios idénticos compitiendo a $45 USD la noche.<br><br>
-          Mientras tanto, el capital inteligente está haciendo lo opuesto: construir menos. Comprar tierra protegida, baja densidad y activos irreplicables."</em></p>`,
-    troya:`<p class="eye" style="color:var(--gold);margin:0 0 6px">EL MENSAJE DE PROSPECCIÓN EN FRÍO:</p>
-           <p style="margin:0 0 8px"><em>"Hola Berna, vi tu análisis en el EP. 21 de HAUS Talks sobre por qué construir menos en Tulum. Para ahorrarte tiempo, te corté este clip listo con subtítulos dinámicos y te redacté un post para tu LinkedIn personal. Es 100% tuyo sin compromiso."</em></p>`
-  };
-  seg('#cseg',v=>{$('#cout').innerHTML=T[v]});
-}},
+      <div class="terminal-container">
+        <div class="terminal-topbar">
+          <div class="terminal-dots">
+            <i></i><i></i><i></i>
+          </div>
+          <span>LP-SWARM-TERMINAL // STATUS: ACTIVE (TULUM RUNTIME)</span>
+          <span style="color:var(--gold)">4 AGENTES ONLINE</span>
+        </div>
 
-{id:'tabulador',label:'04 — Tabulador',at:3,html:`
-<p class="eye rv" style="--i:0">04 &mdash; Inversión &amp; Tiers</p>
-<h2 class="rv" style="--i:1">Precios Transparentes</h2>
-<p class="lead rv" style="--i:2">Sin llamadas eternas para averiguar el precio. Dos planes diseñados para escalar autoridad y prospectos calificados cada mes.</p>
-<div class="seg rv" style="--i:3" id="tplan">
-  <button data-v="starter" aria-pressed="true">Sprint Starter &middot; $499 USD</button>
-  <button data-v="omni" aria-pressed="false">Full Omnichannel &middot; $899 USD</button>
-</div>
-<div class="mod rv" style="--i:4" id="pdesc"></div>
-<div class="mod calc rv" style="--i:5">
-  <p class="eye" style="margin:0">Simulador de Retorno y Tiempo Ahorrado</p>
-  <label for="chrs">Horas mensuales que dedicas a crear contenido: <output id="ohrs"></output></label>
-  <input type="range" id="chrs" min="8" max="40" step="2" value="20">
-  <div class="res">
-    <div><small>Horas ahorradas al año</small><b id="ryear"></b></div>
-    <div><small>Equivalente en sueldo editor+copy</small><b id="rsave"></b></div>
-  </div>
-</div>`,
-init(){
-  const P={
-    starter:`<p class="eye" style="color:var(--gold);margin:0 0 6px">SPRINT STARTER &mdash; $499 USD / MES</p>
-             <ul style="list-style:none;padding:0;margin:0 0 10px;display:grid;gap:6px;font-size:14px">
-               <li>&rarr; <strong>12 Clips Verticales (9:16)</strong> al mes para Reels, TikTok y Shorts.</li>
-               <li>&rarr; <strong>4 Publicaciones Ejecutivas</strong> para LinkedIn (Ghostwriting B2B).</li>
-               <li>&rarr; Subtítulos dinámicos con palabras clave en amarillo/verde neón.</li>
-               <li>&rarr; Entrega semanal en carpeta privada de Google Drive.</li>
-             </ul>`,
-    omni:`<p class="eye" style="color:var(--crimson);margin:0 0 6px">FULL OMNICHANNEL &mdash; $899 USD / MES</p>
-          <ul style="list-style:none;padding:0;margin:0 0 10px;display:grid;gap:6px;font-size:14px">
-            <li>&rarr; <strong>16 Clips Verticales (9:16)</strong> al mes.</li>
-            <li>&rarr; <strong>8 Publicaciones Ejecutivas</strong> para LinkedIn.</li>
-            <li>&rarr; <strong>4 Newsletters Semanales</strong> curadas para tu base de datos de inversores.</li>
-            <li>&rarr; Soporte prioritario y reunión quincenal de estrategia de temas con Diego.</li>
-          </ul>`
-  };
-  seg('#tplan',v=>{$('#pdesc').innerHTML=P[v]});
-  const sl=$('#chrs'), o=$('#ohrs'), ry=$('#ryear'), rs=$('#rsave');
-  const calc=()=>{
-    const h=+sl.value;
-    o.textContent=h+' hrs/mes';
-    ry.textContent=(h*0.85*12).toFixed(0)+' hrs';
-    rs.textContent='$'+(h*45*12).toLocaleString()+' USD';
-  };
-  sl.addEventListener('input',calc);
-  calc();
-}},
+        <div class="terminal-body">
+          <div class="agent-row">
+            <div class="agent-name">@Lead_Scout</div>
+            <div class="agent-output">
+              Procesando episodio de 52 minutos. Transcripción completada por Whisper. Detectados 3 momentos clave de tensión en min 04:15, 21:08 y 38:40.
+            </div>
+          </div>
 
-{id:'autoridad',label:'05 — Autoridad',at:4,html:`
-<p class="eye rv" style="--i:0">05 &mdash; El Respaldo Operativo</p>
-<h2 class="rv" style="--i:1">Construido por Operadores,<br>no por Creadores de Humo</h2>
-<p class="lead rv" style="--i:2">Detrás de LP Content Lab está la experiencia de sistemas y negocios reales de Diego Lecourtois Palencia en la Riviera Maya.</p>
-<dl class="facts rv" style="--i:3">
-  <div><dt>Mr. Lock</dt><dd>Co-Fundador. +2,500 cerraduras IoT operando en Cancún, Tulum y Guadalajara. Alianzas institucionales en planos con Grupo VEQ.</dd></div>
-  <div><dt>Mr. Wood</dt><dd>Carpintería arquitectónica de alta gama en Playa del Carmen. Uniendo madera noble tropical con hardware digital.</dd></div>
-  <div><dt>BiciSaaS</dt><dd>Vertical SaaS y ERP para tiendas y talleres de ciclismo, forjado con tracción B2B nacional.</dd></div>
-  <div><dt>LP &amp; Co.</dt><dd>Firma boutique matriz de automatización de marketing y sistemas de operación.</dd></div>
-</dl>
-<p class="hint rv" style="--i:4">No te habla una agencia de marketing que vive de cursos: te habla un socio de sistemas que sabe cuánto cuesta el tiempo de un director general.</p>`,
-init(){}},
+          <div class="agent-row">
+            <div class="agent-name">@Creative_Dir</div>
+            <div class="agent-output">
+              Generado gancho visual para formato 9:16: <strong>"EL ERROR DE $200K QUE NADIE TE DICE DE TULUM 🚨"</strong>. Calibrada regla de 3 segundos para detener el scroll.
+            </div>
+          </div>
 
-{id:'contacto',label:'06 — Muestra Gratis',at:5,html:`
-<p class="eye rv" style="--i:0">06 &mdash; El Caballo de Troya</p>
-<h2 class="rv" style="--i:1">Tu Primera Muestra Gratis<br>en 24 Horas</h2>
-<p class="lead rv" style="--i:2">Pega el link de YouTube de tu último video, live o podcast. Nuestro enjambre te entregará 1 clip vertical y 1 post de LinkedIn listos para publicar. Sin costo ni compromiso.</p>
-<div class="mod rv" style="--i:3">
-  <div class="fld">
-    <label for="ytlink">Link de YouTube / Spotify / Drive</label>
-    <input type="url" id="ytlink" placeholder="https://www.youtube.com/watch?v=..." required>
-  </div>
-  <div class="fld">
-    <label for="cname">Tu Nombre y Empresa</label>
-    <input type="text" id="cname" placeholder="Ej. Roberto &middot; Desarrolladora Riviera" required>
-  </div>
-  <div class="fld">
-    <label for="cphone">WhatsApp de Entrega</label>
-    <input type="tel" id="cphone" placeholder="+52 984 ..." required>
-  </div>
-  <button class="btn gold" id="sendbtn" style="width:100%;margin-top:6px">Solicitar Mi Muestra Gratuita &rarr;</button>
-  <p id="cstatus" style="margin:0;font-family:var(--mono);font-size:12px;color:var(--gold);display:none"></p>
-</div>
-<div class="row rv" style="--i:4">
-  <a href="https://www.linkedin.com/in/diego-lecourtois-palencia-378a431a5/" target="_blank" class="btn">LinkedIn Diego &rarr;</a>
-  <a href="https://wa.me/5219984955745?text=Hola%20Diego,%20quiero%20conocer%20m%C3%A1s%20de%20LP%20Content%20Lab" target="_blank" class="btn crimson">WhatsApp Directo</a>
-</div>`,
-init(){
-  const btn=$('#sendbtn');
-  btn.onclick=()=>{
-    const y=$('#ytlink').value.trim();
-    const n=$('#cname').value.trim();
-    const p=$('#cphone').value.trim();
-    if(!y||!n||!p){alert('Por favor completa todos los campos para procesar tu muestra.');return}
-    const msg=`Hola Diego! Vengo de la web de LP Content Lab. Mi nombre es ${n}, mi número es ${p} y quiero mi muestra gratis de este video: ${y}`;
-    const url='https://wa.me/5219984955745?text='+encodeURIComponent(msg);
-    $('#cstatus').style.display='block';
-    $('#cstatus').textContent='Redirigiendo a WhatsApp para confirmar la recepción de tu video...';
-    setTimeout(()=>{window.open(url,'_blank')},800);
-  };
-}}
-];
+          <div class="agent-row">
+            <div class="agent-name">@Ghostwriter</div>
+            <div class="agent-output">
+              Redactado post de LinkedIn en estilo de lectura rápida (180 palabras, viñetas limpias, datos concretos en USD, cero clichés robóticos).
+            </div>
+          </div>
 
-function seg(sel,cb){
-  const el=$(sel); if(!el)return;
-  const pick=v=>{
-    el.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v==v));
-    cb(v);
-  };
-  el.addEventListener('click',e=>{const b=e.target.closest('button');if(b)pick(b.dataset.v)});
-  const cur=el.querySelector('[aria-pressed="true"]');
-  if(cur) pick(cur.dataset.v);
-}
+          <div class="agent-row">
+            <div class="agent-name">@Diego_Lecourtois <span class="agent-badge">HUMANO</span></div>
+            <div class="agent-output" style="color:var(--gold)">
+              &check; Criterio validado. Aprobado corte vertical en Opus Clip con subtítulos dinámicos en amarillo neón. Exportando a carpeta de Google Drive del cliente. SLA: Cumplido en 18 horas.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-/* ---------- BUILD SVG ORBITAL MAP ---------- */
-(function build(){
-  let s=`<defs>
-    <pattern id="dots" width="90" height="90" patternUnits="userSpaceOnUse">
-      <circle cx="45" cy="45" r="2" fill="#ededeb" fill-opacity=".1"/>
-    </pattern>
-  </defs>
-  <rect x="-3400" y="-3400" width="6800" height="6800" fill="url(#dots)"/>`;
-  [920,1440,1650,2300].forEach(r=>s+=`<circle r="${r}" class="orb"/>`);
-  NODES.forEach(n=>s+=`<line x1="0" y1="0" x2="${n.x}" y2="${n.y}" class="spoke"/>`);
-  s+=`<polyline class="seq" points="${[{x:0,y:0},...NODES].map(p=>p.x+','+p.y).join(' ')}"/>`;
-  const ticks=(r,a)=>[0,90,180,270].map(g=>`<line x1="0" y1="${-r-14}" x2="0" y2="${-r+22}" transform="rotate(${g+a})" class="tick"/>`).join('');
-  s+=`<g class="hub" id="g0"><circle r="${HUB}" class="ring" fill="#060606"/><circle r="${HUB*.72}" class="ring2"/>${ticks(HUB,45)}
-    <text class="hubtxt" y="24" text-anchor="middle">CONTENT LAB</text>
-    <text class="coord" y="${HUB+72}" text-anchor="middle">21.16° N · 86.85° W — CARIBE MEXICANO</text></g>`;
-  NODES.forEach((n,i)=>{s+=`<g class="node" id="g${i+1}" transform="translate(${n.x} ${n.y}) rotate(${n.r})">
-    <circle r="${R}" class="ring" fill="#060606"/><circle r="${R-32}" class="ring2"/>${ticks(R,0)}
-    <text class="num" y="84" text-anchor="middle">${pad(i+1)}</text>
-    <text class="tag" y="${-R-42}" text-anchor="middle">${pad(i+1)} / 06 — ${S[i+1].label.toUpperCase()}</text></g>`;});
-  svg.innerHTML=s;
-  labels.innerHTML=[`<button class="lbl hubl" data-go="0">Inicio</button>`].concat(NODES.map((n,i)=>`<button class="lbl" data-go="${i+1}"><small>${pad(i+1)}</small>${S[i+1].label}</button>`)).join('');
-  $('#prog').innerHTML=S.map((x,i)=>`<button data-go="${i}" aria-label="Ir a ${x.label}"></button>`).join('');
-})();
+  <!-- ================================================= CASOS REALES -->
+  <section id="casos">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Pruebas en Vivo</span>
+        <h2>Casos de Estudio</h2>
+        <p>
+          Cómo transformamos episodios técnicos de podcast en munición para cerrar clientes e inversionistas de alto ticket.
+        </p>
+      </div>
 
-let vw=innerWidth, vh=innerHeight;
-let cam={x:0,y:0,s:.2,r:0};
-let step=0, mode='step', raf=0, token=0;
+      <div class="case-grid">
+        <!-- Caso 1: HAUS Talks -->
+        <article class="case-card">
+          <div>
+            <div class="case-meta">Lead 01 · Real Estate de Lujo</div>
+            <h3>HAUS Talks EP. 21 — "¿Por qué construir menos en Tulum?"</h3>
+            <p>
+              Análisis financiero con Berna de Haus Real Estate sobre por qué la saturación de micro-estudios está destruyendo el ROI y cómo las villas de baja densidad cobran $800 USD/noche.
+            </p>
 
-function target(which){
-  const m=Math.min(vw,vh);
-  if(which==='overview'){
-    let x0=-HUB,x1=HUB,y0=-HUB,y1=HUB+90;
-    NODES.forEach(n=>{x0=Math.min(x0,n.x-R-40);x1=Math.max(x1,n.x+R+40);y0=Math.min(y0,n.y-R-80);y1=Math.max(y1,n.y+R+40)});
-    const aw=vw-32, ah=vh-170;
-    const s=Math.min(aw/(x1-x0),ah/(y1-y0));
-    return {x:(x0+x1)/2,y:(y0+y1)/2+28/s,s,r:0};
-  }
-  const at=S[which].at;
-  if(at==='hub') return {x:0,y:0,s:m/(HUB*2.05),r:0};
-  const n=NODES[at]; return {x:n.x,y:n.y,s:m/(R*1.95),r:n.r};
-}
-function apply(c){
-  cam=c;
-  world.style.transform=`translate(${vw/2}px,${vh/2}px) rotate(${-c.r}deg) scale(${c.s}) translate(${-c.x}px,${-c.y}px)`;
-  const a=-c.r*Math.PI/180, co=Math.cos(a), si=Math.sin(a);
-  const pts=[{x:0,y:0},...NODES];
-  labels.querySelectorAll('.lbl').forEach((l,i)=>{const dx=pts[i].x-c.x, dy=pts[i].y-c.y;
-    const X=vw/2+c.s*(dx*co-dy*si), Y=vh/2+c.s*(dx*si+dy*co);
-    l.style.transform=`translate(${X}px,${Y}px) translate(-50%,-50%)`;});
-}
-const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
-function fly(to){
-  cancelAnimationFrame(raf); const my=++token;
-  return new Promise(res=>{
-    const from={...cam};
-    const dx=to.x-from.x, dy=to.y-from.y, d=Math.hypot(dx,dy);
-    let dr=((to.r-from.r)%360+540)%360-180;
-    if(reduce||d+Math.abs(Math.log(to.s/from.s))*400+Math.abs(dr)<1){apply(to);return res(my)}
-    const l0=Math.log(from.s), l1=Math.log(to.s);
-    const sFit=Math.min(vw,vh)/(d+R*2.4);
-    const dip=Math.max(0,(l0+l1)/2-Math.log(Math.min(from.s,to.s,sFit)));
-    const dur=Math.min(1900,1000+d*.35);
-    const t0=performance.now(); world.classList.add('moving');
-    const f=now=>{ if(my!==token) return;
-      const t=Math.min(1,(now-t0)/dur), e=ease(t);
-      apply({x:from.x+dx*e,y:from.y+dy*e,s:Math.exp(l0+(l1-l0)*e-dip*Math.sin(Math.PI*e)),r:from.r+dr*e});
-      if(t<1) raf=requestAnimationFrame(f); else {world.classList.remove('moving');res(my)}
-    };
-    raf=requestAnimationFrame(f);
-  });
-}
+            <div class="case-box">
+              <span class="eyebrow" style="margin-bottom:6px">Gancho 9:16 Generado</span>
+              <code>"Si compraste un departamento en Tulum esperando 15% de retorno en Airbnb... caíste en la trampa de la densidad."</code>
+            </div>
 
-function mark(){
-  document.querySelectorAll('#map g').forEach(g=>g.classList.remove('cur'));
-  const at=S[step].at; const g=document.getElementById('g'+(typeof at==='number'?at+1:0)); if(g&&mode==='step') g.classList.add('cur');
-  $('#prog').querySelectorAll('button').forEach((b,i)=>{b.classList.toggle('done',i<step);if(i===step&&mode==='step')b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});
-  $('#now').innerHTML=mode==='overview'?'<b>Mapa</b> <span>&middot; 7 Nodos</span>':`<b>${pad(step+1)} / ${pad(S.length)}</b> <span>&middot; ${S[step].label}</span>`;
-  $('#prev').disabled=mode==='step'&&step===0; $('#next').disabled=mode==='step'&&step===S.length-1;
-  $('#map-btn').setAttribute('aria-pressed',mode==='overview');
-  document.body.classList.toggle('ov',mode==='overview');
-}
-function go(i){
-  i=Math.max(0,Math.min(S.length-1,i)); step=i; mode='step'; mark();
-  try{history.replaceState(null,'','#'+S[i].id)}catch(e){}
-  panel.classList.remove('on');
-  clearTimeout(swapTm); let swapped=false;
-  const doSwap=()=>{if(swapped)return;swapped=true;card.innerHTML=S[i].html;card.scrollTop=0;S[i].init&&S[i].init();};
-  swapTm=setTimeout(doSwap,reduce?0:260);
-  fly(target(i)).then(my=>{ if(my!==token) return; clearTimeout(swapTm); doSwap();
-    requestAnimationFrame(()=>requestAnimationFrame(()=>panel.classList.add('on')));});
-}
-let swapTm=0;
-function overview(){ mode='overview'; panel.classList.remove('on'); mark(); fly(target('overview')); }
+            <div class="case-box">
+              <span class="eyebrow" style="margin-bottom:6px">Post LinkedIn</span>
+              <p style="font-size:0.85rem;color:var(--text);margin:0">
+                <em>"Construir más departamentos en Tulum hoy es la forma más rápida de destruir tu ROI... El dinero inteligente compra escasez, no metros de concreto."</em>
+              </p>
+            </div>
+          </div>
 
-document.addEventListener('click',e=>{
-  const g=e.target.closest('[data-go]'); if(g){go(+g.dataset.go);return}
-  if(e.target.closest('[data-ov]')) overview();
-});
-$('#prev').onclick=()=>mode==='overview'?go(step):go(step-1);
-$('#next').onclick=()=>mode==='overview'?go(step):go(step+1);
-$('#map-btn').onclick=()=>mode==='overview'?go(step):overview();
+          <a href="#muestra" class="btn btn-secondary" style="align-self:flex-start;margin-top:20px">
+            Ver Muestra Completa &rarr;
+          </a>
+        </article>
 
-addEventListener('keydown',e=>{
-  if(e.target.matches('input,textarea,select')||e.metaKey||e.ctrlKey||e.altKey) return;
-  const k=e.key;
-  if(k==='ArrowRight'||k==='PageDown'||(k===' '&&!e.target.closest('button,summary,input'))){e.preventDefault();mode==='overview'?go(step):go(step+1)}
-  else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();mode==='overview'?go(step):go(step-1)}
-  else if(k==='m'||k==='M'){mode==='overview'?go(step):overview()}
-  else if(k==='Escape'){mode==='overview'?go(step):overview()}
-  else if(k==='Home'){go(0)} else if(k==='End'){go(S.length-1)}
-});
+        <!-- Caso 2: Mycasa Real Estate -->
+        <article class="case-card">
+          <div>
+            <div class="case-meta">Lead 02 · Compradores Extranjeros</div>
+            <h3>Mycasa Real Estate — Guía para Compradores de EE.UU.</h3>
+            <p>
+              Desglose técnico con Raúl Morales para compradores estadounidenses y canadienses sobre cláusulas de penalización y régimen de condominio en Playa del Carmen y Tulum.
+            </p>
 
-let sx=null,sy=0;
-addEventListener('pointerdown',e=>{if(e.target.closest('input,textarea,.bar-bot'))return;sx=e.clientX;sy=e.clientY},{passive:true});
-addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;
-  if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){ if(mode==='overview') return; go(step+(dx<0?1:-1)); }},{passive:true});
+            <div class="case-box">
+              <span class="eyebrow" style="margin-bottom:6px">Gancho en Inglés</span>
+              <code>"THE $50,000 PRE-CONSTRUCTION MISTAKE AMERICANS MAKE IN MEXICO 🇲🇽"</code>
+            </div>
 
-addEventListener('resize',()=>{vw=innerWidth;vh=innerHeight;cancelAnimationFrame(raf);token++;
-  apply(target(mode==='overview'?'overview':step));
-  if(mode==='step'){if(!card.innerHTML){card.innerHTML=S[step].html;S[step].init&&S[step].init()}panel.classList.add('on')}});
+            <div class="case-box">
+              <span class="eyebrow" style="margin-bottom:6px">Post LinkedIn B2B</span>
+              <p style="font-size:0.85rem;color:var(--text);margin:0">
+                <em>"Why 8 out of 10 international buyers overlook HOA covenants before wiring their earnest deposit in the Riviera Maya."</em>
+              </p>
+            </div>
+          </div>
 
-/* start */
-const h=(location.hash||'').slice(1); const start=Math.max(0,S.findIndex(x=>x.id===h));
-mode='overview'; apply(target('overview')); mark();
-setTimeout(()=>go(start), reduce?0:900);
-})();
-</script>
+          <a href="#muestra" class="btn btn-secondary" style="align-self:flex-start;margin-top:20px">
+            Ver Muestra Completa &rarr;
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= PRECIOS -->
+  <section id="precios" style="background:#090807">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow">Tabulador Transparente</span>
+        <h2>Inversión &amp; Planes</h2>
+        <p>Sin llamadas secretas para averiguar el precio. Dos paquetes diseñados para sostener una presencia dominante cada semana.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Plan 1 -->
+        <div class="pricing-card">
+          <div>
+            <span class="eyebrow" style="color:var(--text-muted)">01 · Tracción Base</span>
+            <h3>Sprint Starter</h3>
+            <p>Para fundadores que quieren presencia semanal constante en video vertical y LinkedIn sin fricción.</p>
+
+            <div class="price-amount">
+              $499 <small>USD / mes</small>
+            </div>
+
+            <ul class="pricing-features">
+              <li><span class="check">&rarr;</span> <strong>12 Clips Verticales (9:16)</strong> al mes para Reels, TikTok y YouTube Shorts.</li>
+              <li><span class="check">&rarr;</span> <strong>4 Publicaciones Ejecutivas</strong> para LinkedIn (Ghostwriting B2B).</li>
+              <li><span class="check">&rarr;</span> Subtítulos dinámicos con palabras clave en amarillo y verde neón.</li>
+              <li><span class="check">&rarr;</span> Entrega semanal en carpeta privada de Google Drive.</li>
+              <li><span class="check">&rarr;</span> SLA de entrega en 48 horas tras recibir tu video.</li>
+            </ul>
+          </div>
+
+          <a href="https://wa.me/5219984955745?text=Hola%20Diego,%20me%20interesa%20iniciar%20con%20el%20Plan%20Sprint%20Starter%20($499%20USD)" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%">
+            Elegir Sprint Starter
+          </a>
+        </div>
+
+        <!-- Plan 2 -->
+        <div class="pricing-card featured">
+          <span class="pricing-badge">Más Recomendado</span>
+          <div>
+            <span class="eyebrow" style="color:var(--gold)">02 · Dominancia de Marca</span>
+            <h3>Full Omnichannel</h3>
+            <p>Para firmas y directivos que buscan liderar la conversación de su industria y educar a su base de inversionistas.</p>
+
+            <div class="price-amount" style="color:var(--gold)">
+              $899 <small>USD / mes</small>
+            </div>
+
+            <ul class="pricing-features">
+              <li><span class="check">&rarr;</span> <strong>16 Clips Verticales (9:16)</strong> al mes.</li>
+              <li><span class="check">&rarr;</span> <strong>8 Publicaciones Ejecutivas</strong> para LinkedIn.</li>
+              <li><span class="check">&rarr;</span> <strong>4 Newsletters Semanales</strong> curadas para tus suscriptores e inversionistas.</li>
+              <li><span class="check">&rarr;</span> Sesión quincenal de estrategia de temas y enfoque de mercado con Diego.</li>
+              <li><span class="check">&rarr;</span> Soporte prioritario por WhatsApp y canal directo.</li>
+            </ul>
+          </div>
+
+          <a href="https://wa.me/5219984955745?text=Hola%20Diego,%20me%20interesa%20iniciar%20con%20el%20Plan%20Full%20Omnichannel%20($899%20USD)" target="_blank" rel="noopener" class="btn btn-primary" style="width:100%">
+            Elegir Full Omnichannel
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= FUNDADOR / AUTORIDAD -->
+  <section id="fundador">
+    <div class="container">
+      <div class="founder-grid">
+        <div class="founder-photo-box">
+          <div class="founder-avatar-placeholder">
+            <h4>Diego Lecourtois</h4>
+            <span>Systems Architect &amp; Founder</span>
+          </div>
+        </div>
+
+        <div class="founder-content">
+          <span class="eyebrow">El Respaldo Operativo</span>
+          <h3>Construido por Operadores, no por Gurús de Marketing</h3>
+          <p>
+            No somos una agencia improvisada que vive de vender cursos. Detrás de LP Content Lab está la experiencia práctica de construir infraestructura, plataformas de software y ventas B2B en la Riviera Maya.
+          </p>
+          <p style="margin-top:14px">
+            Como cofundador de <strong>Mr. Lock</strong>, escalamos más de 2,500 cerraduras IoT para desarrolladoras como Grupo VEQ. En <strong>Mr. Wood</strong> fusionamos carpintería noble con tecnología. En LP Content Lab aplicamos ese mismo rigor de ingeniería para que tu contenido funcione con la precisión de un reloj suizo.
+          </p>
+
+          <div class="founder-stats">
+            <div class="fstat">
+              <b>+2,500</b>
+              <span>Cerraduras IoT activas</span>
+            </div>
+            <div class="fstat">
+              <b>25x</b>
+              <span>Crecimiento B2B nacional</span>
+            </div>
+            <div class="fstat">
+              <b>100%</b>
+              <span>Enfoque en Margen y Sistemas</span>
+            </div>
+          </div>
+
+          <div style="margin-top:24px;display:flex;gap:12px;flex-wrap:wrap">
+            <a href="https://www.linkedin.com/in/diego-lecourtois-palencia-378a431a5/" target="_blank" rel="noopener" class="btn btn-secondary">
+              LinkedIn Oficial &rarr;
+            </a>
+            <a href="https://lp-and-co.vercel.app/" target="_blank" rel="noopener" class="btn btn-secondary">
+              Ver LP &amp; Co. &rarr;
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= MUESTRA GRATIS (CABALLO DE TROYA) -->
+  <section id="muestra" class="sample-section">
+    <div class="container">
+      <div class="sample-box">
+        <div style="text-align:center;margin-bottom:34px">
+          <span class="eyebrow">Prueba de Concepto Sin Costo</span>
+          <h2 style="font-size:2.2rem;margin-bottom:12px">Tu Primera Muestra Gratis en 24 Horas</h2>
+          <p>
+            Pega el enlace de tu último video en YouTube, Spotify o Drive. Te entregamos 1 clip vertical dinámico y 1 post de LinkedIn listos para publicar. Es 100% tuyo sin compromiso.
+          </p>
+        </div>
+
+        <form id="sampleForm">
+          <div class="form-group">
+            <label for="videoUrl">Enlace de tu Video / Podcast (YouTube o Drive)</label>
+            <input type="url" id="videoUrl" placeholder="https://www.youtube.com/watch?v=..." required>
+          </div>
+
+          <div class="form-group">
+            <label for="senderName">Tu Nombre y Proyecto</label>
+            <input type="text" id="senderName" placeholder="Ej. Carlos · Desarrolladora Inmobiliaria Tulum" required>
+          </div>
+
+          <div class="form-group">
+            <label for="whatsappNumber">Tu Número de WhatsApp</label>
+            <input type="tel" id="whatsappNumber" placeholder="+52 984 ..." required>
+          </div>
+
+          <button type="submit" class="btn btn-gold" style="width:100%;padding:16px;margin-top:8px">
+            Generar Mi Muestra Gratuita &rarr;
+          </button>
+        </form>
+        <p id="formStatus" style="display:none;margin-top:14px;text-align:center;font-family:var(--font-mono);font-size:0.85rem;color:var(--gold)"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================= FOOTER -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-left">
+        <p><strong>LP Content Lab</strong> · Una vertical de <a href="https://lp-and-co.vercel.app/" target="_blank" style="color:var(--text);text-decoration:underline">LP &amp; Co.</a></p>
+        <p style="margin-top:4px;color:rgba(237,232,223,0.4)">Cancún · Playa del Carmen · Tulum (21.16° N · 86.85° W)</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/diego-lecourtois-palencia-378a431a5/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://wa.me/5219984955745" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="mailto:diegolecourtoispalencia14@gmail.com">Email</a>
+        <a href="https://lp-and-co.vercel.app/">Firma Matriz</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================================================= FLOATING CHAT (Hypha Style) -->
+  <aside class="floating-chat" id="floatingChat">
+    <div class="chat-head">
+      <div class="chat-user">
+        <div class="chat-avatar">LP</div>
+        <div class="chat-user-info">
+          <p>Diego Lecourtois</p>
+          <span>En línea · Quintana Roo</span>
+        </div>
+      </div>
+      <button class="chat-close" id="closeChat" aria-label="Cerrar">&times;</button>
+    </div>
+
+    <div class="chat-bubble">
+      Hola 👋 ¿Tienes un canal de YouTube, podcast o grabas recorridos de tus proyectos? Pega tu enlace y te preparo tu primera muestra gratis en 24 horas.
+    </div>
+
+    <a href="https://wa.me/5219984955745?text=Hola%20Diego,%20quiero%20mi%20muestra%20gratis%20de%20LP%20Content%20Lab" target="_blank" rel="noopener" class="chat-action">
+      Enviar Video por WhatsApp &rarr;
+    </a>
+  </aside>
+
+  <script>
+    // Form submission -> triggers WhatsApp direct message with pre-filled video URL
+    const form = document.getElementById('sampleForm');
+    const status = document.getElementById('formStatus');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const v = document.getElementById('videoUrl').value.trim();
+      const n = document.getElementById('senderName').value.trim();
+      const w = document.getElementById('whatsappNumber').value.trim();
+
+      if (!v || !n || !w) return;
+
+      const msg = `Hola Diego! Vengo de lp-content-lab. Mi nombre es ${n} (${w}) y me gustaría recibir mi muestra gratis de este video: ${v}`;
+      const url = `https://wa.me/5219984955745?text=${encodeURIComponent(msg)}`;
+
+      status.style.display = 'block';
+      status.textContent = 'Abriendo WhatsApp para confirmar la recepción de tu video...';
+
+      setTimeout(() => {
+        window.open(url, '_blank');
+      }, 600);
+    });
+
+    // Close floating chat
+    const closeBtn = document.getElementById('closeChat');
+    const chat = document.getElementById('floatingChat');
+    closeBtn.addEventListener('click', () => {
+      chat.classList.add('hidden');
+    });
+  </script>
 </body>
 </html>
